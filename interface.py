@@ -23,8 +23,8 @@ def print_table(rows, headers):
 def management_interface():
     while True:
         print("\n--- Management Interface ---")
-        print("1. User Management")
-        print("2. Showtime Management")
+        print("1. Users & Bookings")
+        print("2. Cinema Operations")
         print("3. Exit")
         choice = input("Enter your choice: ")
 
@@ -41,7 +41,7 @@ def management_interface():
 
 def user_management():
     while True:
-        print("\n--- User Management ---")
+        print("\n--- User & Bookings ---")
         print("1. Users Management")
         print("2. Bookings Management")
         print("3. Back to Main Menu")
@@ -63,7 +63,7 @@ def usersMenu():
         print("1. View")
         print("2. Add")
         print("3. Delete")
-        print("4. Go back to User Management Menu")
+        print("4. Go back to User & Bookings Menu")
         usersChoice = input("Enter your choice: ")
 
         if usersChoice == '1':
@@ -103,19 +103,20 @@ def bookingsMenu():
         print("2. View Bookings for a Specific User")
         print("3. Add")
         print("4. Delete")
-        print("5. Go back to User Management Menu")
+        print("5. Go back to User & Bookings Menu")
         bookingsChoice = input("Enter your choice: ")
 
         if bookingsChoice == '1':
             cursor.execute("""
-                SELECT b.bookingID, u.user_name, m.movie_title, s.start_time, b.num_seats
+                SELECT b.bookingID, u.user_name, m.movie_title, s.start_time, t.theater_name, b.num_seats
                 FROM bookings b
                 JOIN users u ON b.userID = u.userID
                 JOIN showtimes s ON b.showtimeID = s.showtimeID
                 JOIN movies m ON s.movieID = m.movieID
+                JOIN theaters t ON s.theaterID = t.theaterID
             """)
             bookings = cursor.fetchall()
-            headers = ["BookingID", "User", "Movie", "Start Time", "Seats"]
+            headers = ["BookingID", "User", "Movie", "Start Time", "Theater name", "Seats"]
             print("\n--- Bookings ---")
             if bookings:
                 print_table(bookings, headers)
@@ -182,7 +183,7 @@ def bookingsMenu():
 
 def showtime_management():
     while True:
-        print("\n--- Showtime Management ---")
+        print("\n--- Cinema Operations ---")
         print("1. Cinemas management")
         print("2. Theaters management")
         print("3. Movies management")
@@ -215,7 +216,7 @@ def cinemasMenu():
         print("1. View")
         print("2. Add")
         print("3. Delete")
-        print("4. Back to Showtime Management Menu")
+        print("4. Back to Cinema Operations Menu")
         cinema_choice = input("Enter your choice: ")
 
         if cinema_choice == '1':
@@ -235,7 +236,7 @@ def cinemasMenu():
             print("Cinema added successfully.")
         elif cinema_choice == '3':
             cinemaID = input("Enter CinemaID: ")
-            cursor.execute("DELETE FROM cinemas WHERE id = ?", (cinemaID,))
+            cursor.execute("DELETE FROM cinemas WHERE cinemaID = ?", (cinemaID,))
             conn.commit()
             print("Cinema deleted successfully.")
         elif cinema_choice == '4':
@@ -250,7 +251,7 @@ def theatersMenu():
         print("1. View")
         print("2. Add")
         print("3. Delete")
-        print("4. Back to Showtime Management Menu")
+        print("4. Back to Cinema Operations Menu")
         theater_choice = input("Enter your choice: ")
 
         if theater_choice == '1':
@@ -276,7 +277,7 @@ def theatersMenu():
             print("Theater added successfully.")
         elif theater_choice == '3':
             theaterID = input("Enter TheaterID: ")
-            cursor.execute("DELETE FROM theaters WHERE id = ?", (theaterID,))
+            cursor.execute("DELETE FROM theaters WHERE theaterID = ?", (theaterID,))
             conn.commit()
             print("Theater deleted successfully.")
         elif theater_choice == '4':
@@ -291,7 +292,7 @@ def moviesMenu():
         print("1. View")
         print("2. Add")
         print("3. Delete")
-        print("4. Back to Showtime Management Menu")
+        print("4. Back to Cinema Operations Menu")
         movie_choice = input("Enter your choice: ")
 
         if movie_choice == '1':
@@ -307,7 +308,7 @@ def moviesMenu():
             movie_title = input("Enter movie title: ")
             genre = input("Enter genre: ")
             runtime = input("Enter runtime (in minutes): ")
-            release_date = input("Enter release date (YYYY-MM-DD): ")
+            release_date = input("Enter release date (DD-MM-YYYY): ")
             cursor.execute("""
                 INSERT INTO movies (movie_title, genre, runtime, release_date)
                 VALUES (?, ?, ?, ?)
@@ -316,7 +317,7 @@ def moviesMenu():
             print("Movie added successfully.")
         elif movie_choice == '3':
             movieID = input("Enter MovieID: ")
-            cursor.execute("DELETE FROM movies WHERE id = ?", (movieID,))
+            cursor.execute("DELETE FROM movies WHERE movieID = ?", (movieID,))
             conn.commit()
             print("Movie deleted successfully.")
         elif movie_choice == '4':
@@ -331,7 +332,7 @@ def showtimesMenu():
         print("1. View")
         print("2. Add")
         print("3. Delete")
-        print("4. Back to Showtime Management Menu")
+        print("4. Back to Cinema Operations Menu")
         showtime_choice = input("Enter your choice: ")
 
         if showtime_choice == '1':
@@ -360,7 +361,7 @@ def showtimesMenu():
             print("Showtime scheduled successfully.")
         elif showtime_choice == '3':
             showtimeID = input("Enter ShowtimeID: ")
-            cursor.execute("DELETE FROM showtimes WHERE id = ?", (showtimeID,))
+            cursor.execute("DELETE FROM showtimes WHERE showtimeID = ?", (showtimeID,))
             conn.commit()
             print("Showtime deleted successfully.")
         elif showtime_choice == '4':
